@@ -6,6 +6,7 @@ locals {
   cluster_name = "${var.cluster_name}-${var.env_name}"
 }
 
+# Trust Policy to allow EKS service assume role and execute actions
 resource "aws_iam_role" "ms-cluster" {
     name = local.cluster_name
 
@@ -29,3 +30,6 @@ resource "aws_iam_role_policy_attachment" "ms-cluster-AmazonEKSClusterPolicy" {
     policy_arn = "arn:aws:iam:aws:policy/AmazonEKSClusterPolicy"
     role = aws_iam_role.ms-cluster.name
 } 
+
+
+# Create network security policy
