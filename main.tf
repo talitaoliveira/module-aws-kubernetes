@@ -67,3 +67,39 @@ resource "aws_eks_cluster" "ms-up-running" {
         aws_iam_role_policy_attachment.ms-cluster-AmazonEKSClusterPolicy
     ]
 }
+
+# Node Role
+resource "aws_iam_role" "ms-node" {
+    name = "${local.cluster_name}.node"
+
+    assume_role_policy = <<POLICY
+    {
+    "Version": "2012-10-17",
+     "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+     ]
+    }
+    POLICY
+}
+
+# Node Policy
+resource "aws_iam_role_policy_attachment" "ms-node-AmazonEKSWorkerNodePolicy" {
+    policy_arn = "arn:aws:iam:aws:policy/AmazonEKSWorkerNodePolicy"
+    role = aws_iam_role.ms-node.name
+}
+
+resource "aws_iam_role_policy_attachment" "ms-node-AmazonEKS_CNI_Policy" {
+    policy_arn = "arn:aws:iam:aws:policy/AmazonEKS_CNI_Policy"
+    role = aws_iam_role.ms-node.name
+}
+
+resource "aws_iam_role_policy_attachment" "ms-node-AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role = aws_iam_role.ms-node.name
+}
