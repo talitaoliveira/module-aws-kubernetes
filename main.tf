@@ -51,3 +51,19 @@ resource "aws_security_group" "ms-cluster" {
         Name = "ms-up-running"
     }
 }
+
+# Cluster definition
+
+resource "aws_eks_cluster" "ms-up-running" {
+    name = local.cluster_name
+    role_arn = aws_iam_role.ms-cluster.arn
+
+    vpc_config {
+        security_group_ids = [aws_security_group.ms-cluster.id]
+        subnet_ids = var.cluster_subnet_ids
+    }
+
+    depends_on = [
+        aws_iam_role_policy_attachment.ms-cluster-AmazonEKSClusterPolicy
+    ]
+}
