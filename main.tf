@@ -32,4 +32,22 @@ resource "aws_iam_role_policy_attachment" "ms-cluster-AmazonEKSClusterPolicy" {
 } 
 
 
-# Create network security policy
+# Create network security group
+
+resource "aws_security_group" "ms-cluster" {
+    name = local.cluster
+    vpc_id = var.vpc_id # Using the VPC previously created
+
+    egress { # Allows unrestricted outbound traffic
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    # But no inbound traffic because there's no ingress rule
+
+    tags {
+        Name = "ms-up-running"
+    }
+}
